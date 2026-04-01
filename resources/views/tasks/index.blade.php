@@ -1,8 +1,8 @@
 <h1>タスク一覧</h1>
 
-<ul>
+<<ul id="task-list">>
 @foreach($tasks as $task)
-    <li>
+    <<li data-id="{{ $task->id }}">>
         <strong>{{ $task->title }}</strong><br>
         詳細:{{ $task->infomation }}<br>
 
@@ -16,15 +16,49 @@
                     <option value="2" {{ $task->status == 2 ? 'selected' : '' }}>完了</option>
                 </select>
             </form>
+
     </li>
 @endforeach
 </ul>
 
-<h2>タスク追加<h2>
 
+
+<h2>タスク追加</h2>
+@error('title')
+<div style="color:red;">{{ $message }}</div>
+@enderror
 <form action="/tasks" method="POST">
     @csrf
     <input type="text" name="title" placeholder="タスク名">
     <input type="text" name="infomation" placeholder="詳細">
     <button type="submit">追加</button>
 </form>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+const el = document.getElementById('task-list');
+
+Sortable.create(el, {
+    animation: 150,
+    onEnd: function () {
+        let order = [];
+
+        document.querySelectorAll('#task-list li').forEach((item, index) => {
+            order.push({
+                id: item.dataset.id,
+                order: index
+            });
+        });
+
+        fetch('/tasks/reorder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(order)
+        });
+    }
+});
+</script>
