@@ -8,7 +8,7 @@ use App\Models\Task;
 class TaskController extends Controller
 {
     public function index(){
-        $tasks = Task::orderBy('order')->get();//並び順から取得
+        $tasks = Task::orderBy('order')->orderBy('id')->get();//並び順から取得
         return view('tasks.index', compact('tasks'));
     }
 
