@@ -17,6 +17,12 @@
                 </select>
             </form>
 
+            <form action="/tasks/{{ $task->id }}" method="POST" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button onclick="return confirm('削除しますか？')">削除</button>
+            </form>
+
     </li>
 @endforeach
 </ul>
@@ -43,7 +49,25 @@ const el = document.getElementById('task-list');
 Sortable.create(el, {
     animation: 150,
 
+        onEnd: function () {
+        let order = [];
 
+        document.querySelectorAll('#task-list li').forEach((item, index) => {
+            order.push({
+                id: item.dataset.id,
+                order: index
+            });
+        });
 
+        fetch('/tasks/reorder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(order)
+        });
+    }
+});
 
 </script>

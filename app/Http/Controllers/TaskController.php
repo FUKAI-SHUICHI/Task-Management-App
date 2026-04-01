@@ -38,14 +38,18 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    public function reorder(Request $request)
-{
+    public function reorder(Request $request){
     foreach ($request->all() as $item) {
         Task::where('id', $item['id'])
             ->update(['order' => $item['order']]);
     }
 
     return response()->json(['status' => 'ok']);
+}
+
+public function destroy(Task $task){
+    $task->delete();
+    return redirect('/');
 }
 
 }
